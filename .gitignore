@@ -1,0 +1,4 @@
+.env
+updraft-context-db/
+codehawks-docs-db/
+*.json

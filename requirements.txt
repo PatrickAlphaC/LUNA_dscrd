@@ -1,0 +1,6 @@
+discord.py
+ollama
+datasets
+langchain-community
+requests
+python-dotenv

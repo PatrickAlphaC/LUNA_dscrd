@@ -1,0 +1,502 @@
+---
+title: The Audit (Security Review Process)
+---
+
+_Follow along with this video:_
+
+---
+
+When developing smart contracts, understanding and following the audit process is a crucial step towards achieving a more secure protocol. Here, we'll outline an example of this process.
+
+## High-Level Overview of The Audit Process
+
+The smart contract audit process can be briefly summed up in these steps:
+
+1. **Get Context**: Understand the project, its purpose and its unique aspects.
+2. **Use Tools**: Employ relevant tools to scan and analyze the codebase.
+3. **Manual Reviews**: Make a personal review of the code and spot out unusual or vulnerable code.
+4. **Write a Report**: Document all findings and recommendations for the development team.
+
+To illustrate how this pans out in reality, we can look at the Tincho method used to audit ENS – a process that landed him a cool $100,000 payout! We'll delve into this later on.
+
+## Breakdown of the Audit Process
+
+For a more detailed perspective, let’s consider the process as broken into three distinct phases:
+
+**Initial Review:** The initial review of a protocol can also be broken down into 4 distinct phases.
+
+- Scoping - This is getting a sense of the protocol. In this phase, auditors go through the code to scope it. This gives an idea of how much time might be required for the audit, which can then be used to establish pricing. Key tasks include identification of all the contract’s dependencies and a general overview of the code. At this stage, auditors don’t dig deep into anything yet.
+- Reconnaissance - Here an auditor starts walking through the code, running tools, interacting with the protocol in an effort to break it.
+- Vulnerability Identification - An auditor determines which vulnerabilities are present and how they're exploited as well as mitigation.
+- Reporting - Compile a report detailing all of the identified vulnerabilities and recommendations to make the protocol more secure.
+
+> "Your job is to do whatever it takes to make the protocol more secure."
+
+**Protocol Fixes:** At this stage the protocol will take an auditor's report and work towards implementing suggested changes and mitigation. The length of time of this period can vary based on complexity of the issues, number of vulnerabilities identified and more.
+
+**Mitigation Review:** Once a protocol has employed and tested all of the recommended fixes, a review is conducted with a focus on verifying that previously reported vulnerabilities have been resolved.
+
+Your ultimate aim should be to make the protocol more secure. Therefore, ensure to take notes of all findings and steps and elaborate it in your report.
+
+> Difference in Audit Types: Note that the aforementioned process details a private audit or a traditional security review. For competitive audits, you are typically optimized for time and identifying as many high vulnerabilities as possible.
+
+Remember, the goal of conducting contract audits isn't simply to tick a box. It's about ensuring the security and smooth running of the smart contract at all stages of its lifecycle. The more audits you conduct, the better you become at identifying potential security issues.
+
+
+
+
+
+## Embedding Security Audits in Development Lifecycle
+
+The process of developing a smart contract follows a lifecycle too. According to the [OWASP](https://www.owasp.org/index.php/Main_Page) (The Open Web Application Security Project) guide, security isn't just a one-off step but a part of your ongoing smart contract journey. It is about fostering the mindset that security is continuous. The smart contract developer lifecycle entails the following stages:
+
+1. **Plan and Design**
+2. **Develop and Test**
+3. **Get an Audit**
+4. **Deploy**
+5. **Monitor and Maintain**
+
+OWASP strongly emphasizes that embedding security considerations into all stages of your Development Lifecycle is what it takes to build a secure decentralized application, not just conducting a one time smart contract “check.” Before deploying your contract, think hard about the security measures in place and ensure to maintain and monitor your code post-deployment.
+
+While a smart contract security audit is an absolute necessity, also ensure to plan for any contingencies post-deployment. The key takeaway here is this: Smart contract security is a crucial part of the smart contract development lifecycle and should be treated with as much care as the development of the smart contract itself.
+---
+title: What if I do a Security Review and the protocol gets hacked?
+---
+
+_Follow along with this video:_
+
+---
+
+# Penetrating the Scenario: What If Your Security Audit Fails?
+
+As the world moves towards a more digital infrastructure, the importance of security audits cannot be overstated. But who carries the blame when these audits fail? Should it always land at the feet of those responsible for conducting the audit?
+
+While broaching upon this intricate subject, I recently had a pleasant chat with the legendary Tincho, who imparted an inspiring perspective. He offers valuable insights on the way we should perceive the role and responsibilities of auditors in these precarious scenarios. Below will be summaries based on his thoughts and perspective.
+
+## Redefining the Role of Auditors
+
+In the eyes of many, the fundamental purpose of a security audit is to identify and rectify the most critical vulnerabilities in a system. However, Tincho encourages us to look beyond this simplistic view.
+
+> Auditors should provide value, regardless of whether or not they spot critical issues.
+
+In other words, an auditor's value doesn't solely rest upon their ability to find vulnerabilities. Instead, their advice should strengthen the overall security protocol and offer pragmatic solutions for future scenarios.
+
+Of course, it goes without saying that the fewer critical vulnerabilities that are overlooked, the better - the safer Ethereum will be. It's naive however to believe that an auditor is solely responsible for when things go wrong.
+
+## Who Owns the Blame?
+
+The notion of finding a scapegoat when a system is exploited is a regressive one.
+
+> A whole chain of events leads to the successful exploitation of a vulnerability.
+
+Attributing the failure of a system to an auditor's incompetency is simplistic and misguided. If a vulnerability was missed, it means it slipped past numerous stages of checks and balances, of which an audit is just one. When a flaw goes unnoticed for as long as four months, there are perhaps lapses in system monitoring and in many other security parameters.
+
+## The Auditor’s Role in the Wake of a Breach
+
+So, what should an auditor do if a protocol they've reviewed ends up compromised? The answer is that a responsible security partner should not abandon their client in the midst of a crisis.
+
+As an auditor, you may be able to help mitigate the damage, restrict the scope of the attack, and possibly identify the hackers. A quality auditor must be there, lending their expertise, during the inevitable chaos that ensues after a breach.
+
+> "If you are to be the trusted security partner of your clients, probably, when they are hacked, you want to be there. You want to be there supporting them." - Tincho
+
+## Conclusion
+
+Security is a journey.
+
+It was great catching up with Tincho, whose outlook on security audits balances realism with the optimistic pursuit of improvement. Every party involved in a security protocol must work together as a team and learn from any failure to ensure a safer, more secure digital environment.
+---
+title: Rekt Test
+---
+
+_Follow along with this video:_
+
+---
+
+## Audit Readiness
+
+The concept that once you've had an audit done, you're ready to ship - is wrong. There are two tests that I tell everyone to look at prior to getting a security review one is the [**nacentxyz simple-security-toolkit**](https://github.com/nascentxyz/simple-security-toolkit) and the other is [**The Rekt Test**](https://blog.trailofbits.com/2023/08/14/can-you-pass-the-rekt-test/), by Trail of Bits.
+
+### The Rekt Test
+
+The Rekt Test is highly important as it poses a set of questions to gauge your protocol's preparedness for an audit. This tool forces you to think about security measures from a more proactive angle. Should your protocols fail to answer these questions, the chances are that they're not audit-ready.
+
+
+
+The questions touch on several aspects like documentation, security roles, security tools, and protective measures, among others. Here's a curated list:
+
+- **Do you have all actors roles and privileges documented?**
+- **Do you keep documentation of external services contracts and Oracles?**
+- **Do you have a written and tested incident response plan?**
+- **Do you document the best ways to attack your system?**
+- **Do you perform identity verification and background checks on all employees?**
+- **Do you have a team member with security defined in the role?**
+- **Do you require hardware security keys for production systems?**
+- **Do you define key invariants for your system and test them on every commit?**
+- **Do you use the best automated tools to discover security issues in your code?**
+- **Do you undergo external audits and maintain a vulnerability disclosure or bug bounty program?**
+- **Have you considered and mitigated avenues for abusing users of your system?**
+
+As developers, you must be able to answer all these queries before you proceed with an audit. If you're dealing with a protocol that fails to answer these questions, it's best to tell them the protocol isn't ready to ship, or arguably audit, until they can.
+
+> "Delegate responsibility to someone on your team for security - Give your project a sense of ownership and a point person to handle any security breaches."
+
+### Nascent Audit Readiness Checklist
+
+[**This**](https://github.com/nascentxyz/simple-security-toolkit) checklist is another effective method to assess if you're ready for an audit. Though it offers different perspectives, it's another tool that helps you determine if your protocols are prepared for audits.
+
+### Next Steps and Post Deployment
+
+We'll later cover the important of Post Deployment Planning and all that entails, including:
+
+- Bug Bounty Programs
+- Disaster Recovery Drills
+- Monitoring
+
+Thinking about the steps necessary _after_ deployment really frames a protocols security holistically and ensures readiness to deal with potential exploits and ability to respond quickly.
+---
+title: Top kinds of Attacks in Web3 Today
+---
+
+_Follow along with this video:_
+
+---
+
+As I've mentioned a few times, we need to have this **attackers and defenders mindset**. We need to always be expanding our knowledge, we need to always be leveling up.
+
+As we progress I'll be giving you a tonne of tools to learn and grow your skill set. In addition to this, there will be exercises throughout for you to continue to seek that knowledge and really commit it.
+
+### Unraveling the Top Attack Vectors
+
+Lets consider the weakest parts of Web3 and remind everyone with the **“Top Attack Vectors.”**
+
+1. **Private Keys** - Stolen Private Keys are responsible for the largest loss of funds so far in 2023 at `$243,000,000`
+2. **Reward Manipulation** – This vector involves the manipulation of decentralized incentive systems that could disrupt the balance and fairness within a network. `$200,000,000` has been rugged so far this year.
+3. **Price Oracle Manipulation** – This threat arises when a price oracle in centralized, or if a single oracle is relied upon, particularly with respect to price data. These vulnerabilities are responsible for `~$146,000,000` in losses in 2023.
+4. **Insufficient Access Controls** – onlyOwner modifiers, multi-sig wallets - just a couple things that could have preventing `$17,000,000` in stolen funds this year.
+5. **Re-entrancy(and Read-Only Re-entrancy)** - by not adhering to proper Checks, Effects, Interactions patterns - protocols are still being rekt to the tune of `$20,500,000` combined in 2023.
+
+Millions more have been lost across various, well-documented, and preventable attack vectors. The situation clearly illustrates how education is half the battle.
+
+Collectively, we will tackle these bugbears and issues in our forthcoming security reviews.
+
+> Always remember, my friends - Cybersecurity isn't about the systems or the codes; it's about maintaining a mindset. A mindset akin to an endless game of chess, predicting the opponent’s moves and always staying a step ahead.
+
+### Engaging in Persistent Learning and Improvement
+
+In the forthcoming series of security audits, you'll get hands-on practice with data analysis, encryption methods, tackling suspicious scripts, and combating various cybersecurity threats. The exercises will stimulate your intellectual growth and help ingrain essential concepts into your tech-strategist mind.
+---
+title: What is a Smart Contract Audit?
+---
+
+_Follow along with this video:_
+
+##
+
+---
+
+You might think you've got a grip on what a smart contract audit is all about, but this lesson aims to help you dive deeper and truly comprehend the whole process. Brace yourself, as today we are stepping into the interesting realm of security reviews.
+
+Let's start off by stating that the term "smart contract audit" is a bit of a misnomer. As a more appropriate alternative, I am a stout advocate of "security review." I even have a T-shirt to prove my allegiance!
+
+You might be wondering why this change of terms is required. Well, it’s because the term 'audit' might wrongly insinuate some kind of guarantee or even encompass legal implications. A security review, being free of these misconceptions, exudes the essence of what we are actually doing: looking for as many bugs as possible to ensure maximum code security.
+
+> Note: Despite this, many protocols still insist on requesting a "smart contract audit," so it's eminent to know that the terms are interchangeable. When you hear "security review", think "smart contract audit" and vice versa. Protocols are often unaware of these nuances, but you, as a trained security researcher, know better!
+
+By now, I hope you're questioning with anticipation: "What does a security review entail?"
+
+## The Three Phases of a Security Review
+
+Right in our GitHub repository, we detail the three phases of a security review and what that process looks like.
+
+    1. Initial Review
+            a. Scoping
+            b. Reconnaissance
+            c. Vulnerability identification
+            d. Reporting
+    2. Protocol fixes
+            a. Fixes issues
+            b. Retests and adds tests
+    3. Mitigation Review
+            a. Reconnaissance
+            b. Vulnerability identification
+            C. Reporting
+
+To give you a heads-up, there really isn't a "one-size-fits-all" approach to smart contract auditing. There are several unique strategies, each bringing a different set of pros and cons to the table.
+
+In this course we'll discuss two particularly effective techniques, `"the Tincho"` and `"the Hans"`, to help familiarize you with the process. However, remember that these are just examples; there isn’t a definitive, "correct" way of performing a security review.
+
+Before we delve into the specifics, let's discuss why security reviews are critical.
+
+## Importance of Security Reviews
+
+> A smart contract audit is a timeboxed, security based review of your smart contract system. An auditor's goal is to find as many vulnerabilities as possible and educate the protocol on ways to improve their codebase security and coding best-practices moving forward.
+
+As code deployed to a blockchain is immutable, it’s crucial that it's error-free before deployment. The permissionless and adversarial nature of the blockchain means that protocols need to be ready to repel malicious users. Failure to do so can lead to hefty monetary losses, as evidenced by the nearly $4 billion stolen due to smart contract vulnerabilities last year.
+
+The benefits of conducting a security review go beyond just minimizing vulnerabilities.
+
+It also aids protocol developers in enhancing their understanding of the code itself, thereby accelerating feature implementation and increasing effectiveness. A security review can also familiarize your team with the latest trends and tooling in the space.
+
+Often a single audit won't be enough, protocols are really entering into a security journey which may include:
+
+- Formal Verification
+- Competitive Audits
+- Mitigation Reviews
+- Bug Bounty Programs
+
+With this understanding, let's familiarize ourselves with the process of a typical audit.
+
+### Reach Out for a Review
+
+The review process begins when a protocol reaches out, be it before or after their code is complete. After they make contact, it's important to determine the cost of a review based on things like:
+
+- Code Complexity/nSLOC
+- Scope
+- Duration
+- Timeline
+
+Lines of Code: Duration
+
+- 100 : 2.5days
+- 500 : 1 Week
+- 1000 : 1-2 Weeks
+- 2500 : 2-3 Weeks
+- 5000 : 3-5 Weeks
+- 5000+: 5+ weeks
+
+Take this with a lot of salt though, as these timelines vary largely based on circumstance.
+
+With the submission of a `commit hash` and `down payment` by the protocol and start date can be set!
+
+> Note: The `commit hash` is the unique ID of the codebase an auditor will be working with.
+
+### Audit Begins
+
+Now that the admin work is done, auditors can roll up their sleeves and get to work. Using everything in their arsenal, they will strive to find as many vulnerabilities as possible in your code.
+
+### Initial Report
+
+Once the review period is over, the auditors compile an initial report. This report includes all findings, categorized according to severity
+
+- High
+- Medium
+- Low
+- Information/Non-critical
+- Gas Efficiencies
+
+High, medium and low findings have their severity determined by the impact and likelihood of an exploit.
+
+Informational/Non-Critical and Gas are findings focused on improving the efficiency of your code, code structure and best practices. These aren't vulnerabilities, but ways to improve your code.
+
+### Mitigation Phase
+
+The protocol's team then has a fixed period to address the vulnerabilities found in the initial audit report. More often than not, they can simply implement the recommendations provided by the auditors.
+
+### Final Report
+
+Upon completion of the mitigation phase, the audit team compiles a final audit report focusing exclusively on the fixes made to address the initial report's issues. Hopefully, this cements a strong relationship between the protocol and the audit team, fostering future collaborations to keep Web3 secure.
+
+## Ensuring a Successful Audit
+
+For an audit to be as successful as possible, you should ensure that there's:
+
+- Good documentation
+- A solid test suite
+- Clear and readable code
+- Modern best practices are followed
+- Clear communication channels
+- An initial video walkthrough of the code
+
+By considering auditors as an extension of your team, maintaining an open channel of communication, and providing them with the necessary documentation and context, you ensure the audit process is smoother and more accurate, providing auditors valuable context of the codebase.
+
+## Post Audit
+
+Lastly, remember that a smart contract audit is an integral part of a security journey rather than an endpoint. Even after an audit, any subsequent code changes need to be reviewed as the new code is unaudited, regardless of the size of the change.
+
+> Remember: One audit might not be enough. Getting more eyes on your code is only going to increase the chances of catching vulnerabilities before it's too late
+
+## What an audit _isn't_
+
+Going through a security review does not mean that your code is bug free. Security is a continuous process tha tis always evolving.
+
+## In Closing
+
+This should have provided you a high-level understanding of what a security review is, what it's comprised of and what to expect while performing one.
+
+We'll detail some of the specific differences between `competitive` and `private` audits in a later section.
+
+> "There is no silver bullet in smart contract auditing. But understanding the process, methods, and importance of regular security reviews can significantly enhance your protocol's robustness."
+---
+title: Exercises
+---
+
+_Follow along with this video:_
+
+---
+
+### Section 2: Excercises
+
+---
+
+🎯 Exercise: `Sign up for at least 1 security/web3 newsletter!`
+
+The reason this is so important is that you are now a security _researcher_. Keyword - `researcher`. You need to constantly be learning and taking in new things.
+
+In this course we're going to be studying other people's reports, studying other audits (using a tool called [**Solodit**](https://solodit.xyz/)) and we'll be continuously learning from previous exploits.
+
+> Exploits in the space are learning opportunities for us to improve as security researchers.
+
+Here are some newletters/resources to check out:
+
+- [Blockchain Threat Intelligence](https://newsletter.blockthreat.io/?r=2mgsm7) (referral link)
+- [Solodit](https://solodit.xyz/)
+- [Rekt](https://rekt.news/)
+- [Week In Ethereum](https://weekinethereumnews.com/)
+- [Consensys Diligence Newsletter](https://consensys.io/diligence/newsletter/)
+- [Officer CIA](https://officercia.mirror.xyz/)
+
+With all that said, you've now completed the high-level overview of what this process looks like. You should be very proud of yourself.
+
+Take a break and prepare to dive into our first audit together - Puppy Raffle.
+
+Section 2 NFT Challenge 👀
+
+[Hardest one of the whole course (Arb)](https://arbiscan.io/address/0xeab9c7ac697408fd1581494577c7c0716c3b75e6)
+
+[Hardest one of the whole course (Sepolia)](https://sepolia.etherscan.io/address/0x34d130b174f4a30a846fed7c02fcf53a19a4c2b6#code)
+---
+title: What tools do we use in Security Reviews?
+---
+
+_Follow along with this video:_
+
+---
+
+## Tools for Security Reviews
+
+Let's overview some of the tools we'll be using while performing security reviews. As we progress in the course, you'll get more hands on experience with how they work!
+
+### Your First Line of Defense: Test Suites
+
+Your classic test suite is your project's first line of defense. These are your frameworks like Foundry, Hardhat, Brownie, Apeworx - even Remix has tests.
+
+> _Rest in Peace Truffle_ 😢
+
+This course covers some really robust test suites that you can model your tests after and we'll talk more about the concept of `test coverage` a little later on.
+
+## Static Analysis: Debugging Without Execution
+
+Static analysis represents the next level of defense. This method automatically checks for issues without executing your code, hence the debugging process remains `static`. Slither, 4nalyzer, Mythril, and Aderyn are some prominent tools in the static analysis category.
+
+Throughout this course, we'll work heavily with Slither and Aderyn, you'll become experts at these static analysis options.
+
+## Fuzz Testing: Randomness Meets Tests
+
+Next we have Fuzz testing, which really comes in two flavours, `fuzz testing` and `stateful fuzz testing`.
+
+
+
+A few other types of testing we _won't_ be covering are `differential test` and `chaos tests`, but in an effort to further you security journey, you always want to be looking for new looks and expanding your knowledge, so you may want to check them out.
+
+## Formal Verification: Mathematical Proofs
+
+Formal verification is a broad term for deploying formal methods to affirm the correctness of hardware or software. Often, these methods involve converting the codebase into mathematical expressions and deploying mathematical proofs to authenticate that the code does or doesn't do something specific.
+
+A popular formal verification approach is symbolic execution. This method converts your Solidity function into math or a set of boolean expressions. Manticore, Certora, Z3 stand tall in this domain.
+
+We will delve deeper into formal verification in later sections.
+
+## AI Tools: Not Quite There Yet
+
+Lastly but importantly, AI tools offer another dimension to imagine code auditing functionalities. However, despite their potential, they have some distance to cover before they provide substantial value for securing a codebase. At present, using AI tools could serve as a sanity check or aid in looking for something quickly, but if a project suggests it has been audited by an AI tool like `ChatGPT`, it is best to be skeptical and question if the project takes security seriously.
+
+There's a great GitHub repo by ZhangZhuoSJTU that illustrates examples of bugs that are detectable by machines and those that aren't. Check it out [**here**](https://github.com/ZhangZhuoSJTU/Web3Bugs).
+
+## Wrapping Up
+
+An important takeaway for you is that around **80%** of actual bugs and competitive audit bugs are not auto-detectable by machines, _including our present-day AI tools_. This revelation underlines two key facts:
+
+1. Our current tools aren't up to the mark, and we need better ones.
+2. Human auditors and human security researchers remain paramount. The vast majority of bugs often stem from business logic and incorrect implementations rather than common solidity or cryptography oddities.
+
+You'll learn more about this distinction as we continue in this course.
+---
+title: Lesson 2 Recap
+---
+
+_Follow along with this video:_
+
+---
+
+Congratulations! You've come so far already, let's do a quick recap of what's been covered in this section.
+
+### The Basics of Smart Contract Audits
+
+A smart contract audit is a time-boxed security review, looking for security vulnerabilities. The goal here is to inform the protocol on how to be as secure as possible.
+
+### The Fundamentals of a Security Review
+
+There's no `silver bullet` when it comes to how to perform a security review. Generally, a security review is divided into three stages:
+
+1. Initial review
+   - Scoping
+   - Reconnaissance
+   - Vulnerability Identification
+   - Reporting
+2. Protocol Fixes
+   - Protocol fixes issues
+   - Retests and adds tests for changes
+3. Mitigation Review
+   - Reconnaissance
+   - Vulnerability Identification
+   - Reporting
+
+### Smart Contract Development Life Cycle
+
+Keep in mind that ensuring security isn’t only a crucial point in the smart contract development lifecycle, it's a continuous, never-ending process!
+
+- Plan & Design
+- Develop & Test
+- Smart Contract Audit & Post Deploy Planning
+- Deploy
+- Monitor & Maintain
+
+> "_Security shouldn't just be an afterthought or some box you check. You need to have a security mindset from day one_".
+
+Thinking about post-deployment planning, monitoring and maintaining is just as important as the development itself.
+
+### Tooling for Security Review
+
+In future posts, we'll be delving into the various tools utilized in conducting security reviews. Trust me, you'll need to get your hands dirty with tools like
+
+Static Analysis
+
+- [Slither](https://github.com/crytic/slither)
+- [Aderyn](https://github.com/Cyfrin/aderyn)
+
+Fuzzing/Invariant Tests
+
+- [Foundry Test Suite](https://github.com/foundry-rs/foundry)
+
+Formal Verification
+
+- [Certora](https://www.certora.com/)
+
+AI
+
+- [Phind](https://www.phind.com/search?home=true)
+- [ChatGPT](https://chat.openai.com)
+- [Co-Pilot](https://github.com/features/copilot)
+- [AI Limitations](https://github.com/ZhangZhuoSJTU/Web3Bugs)
+
+### Audit Readiness
+
+Before a protocol is even ready for an audit, they should consider where they stand on the [**Rekt Test**](https://blog.trailofbits.com/2023/08/14/can-you-pass-the-rekt-test/) or other checklists like nacentxyz's [**simple-security-toolkit**](https://github.com/nascentxyz/simple-security-toolkit)
+
+### Always be Learning
+
+We need to always be improving as security researchers and adopt an `attacker vs defender` mindset. It's only by staying informed and constantly improving that we can stay ahead of the problem.
+
+We touched on top attack vectors that are hitting Web3 to this day (including re-entrancy which has been around since _2016!_).
+
+Hopefully, with you taking this course we can learn from the mistakes in the past and finally reign in the exploitation in Web3.

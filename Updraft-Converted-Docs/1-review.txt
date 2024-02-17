@@ -1,0 +1,1116 @@
+---
+title: Advanced Solidity Pre-requisites
+---
+
+_Follow along the with the video_
+
+---
+
+Let's look at a couple advanced solidity concepts that will be important to understand as you progress through this course.
+
+## The Core of Smart Contracts: Storage
+
+The first advanced feature we'll be covering today is storage in smart contracts. Every smart contract includes this integral element. This critical component is the space allotted to your variables within the contract.
+
+When you create a state variable within your contract, an individual storage slot is carved out just for that variable.
+
+It's worth noting, however, that constants or immutable variables do not occupy space in storage. This unique trait is due to their nature of being stored directly within the contract's bytecode.
+
+To illustrate:
+
+
+
+### Hands-on Learning with Code
+
+You can see this yourself through a few commands in Foundry. In the above contract, if we use...
+
+```bash
+forge inspect Counter storage
+```
+
+We'll get a readout of the storage slots in our `Counter` contract which looks like this:
+
+```bash
+"storage": [
+    {
+      "astId": 44623,
+      "contract": "src/Counter.sol:Counter",
+      "label": "number1",
+      "offset": 0,
+      "slot": "0",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 44625,
+      "contract": "src/Counter.sol:Counter",
+      "label": "number2",
+      "offset": 0,
+      "slot": "1",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 44630,
+      "contract": "src/Counter.sol:Counter",
+      "label": "number4",
+      "offset": 0,
+      "slot": "2",
+      "type": "t_uint256"
+    }
+  ],
+```
+
+Notice how the variable `number3` isn't returned. This is because this variable is contained as a constant within the contract's bytecode.
+
+> Remember, always experiment with code, because it's in the _doing_ that we grasp the most complex concepts!
+
+### Wrapping Up with a Video Recap
+
+The next lesson will be a quick video refresher on storage to get up to speed on the concept and prepare for the harder stuff to come!
+---
+title: Self-destruct
+---
+
+_follow along with the video_
+
+---
+
+## Forever On-chain ... mostly
+
+The next concept I want you to know is that of the `selfdestruct()` keyword in Solidity. In essence this keyword will destroy, or delete a contract.
+
+## The Unique Characteristic of Selfdestruct
+
+Why `selfdestruct` stands out lies in its exceptional behavior once a contract gets destroyed. Any Ethereum (or ETH) residing within the deleted contract gets automatically ‘pushed’ or ‘forced’ into any address that you specify.
+
+Under normal circumstances a contract that doesn't contain a receive or fallback function (or some other payable function capable of receiving funds) cannot have ETH sent to it.
+
+Only through the use of `selfdestruct` can you be permitted to push any Ethereum into such a contract.
+
+So if ever you’re hunting for an exploit, or you have identified an attack where you need to force ETH into a contract, `selfdestruct` will be your instrument of choice.
+
+## `selfdestruct` in Action
+
+To get a clear understanding, let’s put these into practice. Starting with a code base from [Solidity by example](https://solidity-by-example.org/hacks/self-destruct/) - and then carrying it into Remix, we will be able to observe this concept directly in action.
+
+```js
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+// The goal of this game is to be the 7th player to deposit 1 Ether.
+// Players can deposit only 1 Ether at a time.
+// Winner will be able to withdraw all Ether.
+
+/*
+1. Deploy EtherGame
+2. Players (say Alice and Bob) decides to play, deposits 1 Ether each.
+2. Deploy Attack with address of EtherGame
+3. Call Attack.attack sending 5 ether. This will break the game
+   No one can become the winner.
+
+What happened?
+Attack forced the balance of EtherGame to equal 7 ether.
+Now no one can deposit and the winner cannot be set.
+*/
+
+contract EtherGame {
+    uint public targetAmount = 7 ether;
+    address public winner;
+
+    function deposit() public payable {
+        require(msg.value == 1 ether, "You can only send 1 Ether");
+
+        uint balance = address(this).balance;
+        require(balance <= targetAmount, "Game is over");
+
+        if (balance == targetAmount) {
+            winner = msg.sender;
+        }
+    }
+
+    function claimReward() public {
+        require(msg.sender == winner, "Not winner");
+
+        (bool sent, ) = msg.sender.call{value: address(this).balance}("");
+        require(sent, "Failed to send Ether");
+    }
+}
+
+contract Attack {
+    EtherGame etherGame;
+
+    constructor(EtherGame _etherGame) {
+        etherGame = EtherGame(_etherGame);
+    }
+
+    function attack() public payable {
+        // You can simply break the game by sending ether so that
+        // the game balance >= 7 ether
+
+        // cast address to payable
+        address payable addr = payable(address(etherGame));
+        selfdestruct(addr);
+    }
+}
+
+```
+
+Looking closely at the above contracts, we can see that `EtherGame` requires `address(this).balance == targetAmount`. The expectation of the protocol is that any user can only deposit 1ETH and each deposit transaction is checked as a winner.
+
+Can you think of how we'd break these invariants?
+
+By leveraging `selfdestruct(payable(address(etherGame)));` on our `Attack` contract, we can force ETH to the `EtherGame` contract that isn't accounted for.
+
+```js
+if (balance == targetAmount) {
+  winner = msg.sender;
+}
+```
+
+By forcing enough ETH to `EtherGame` we can assure the above condition is never met and a winner is never decided!
+
+## Conclusion
+
+The `selfdestruct()` function is powerful. It's one of the only ways to force a contract to receive ETH that it doesn't want and in so doing exists as an attack vector for any protocol not prepared for it.
+---
+title: Fork Tests & Congrats!
+---
+
+_follow along with the video_
+
+---
+
+## Forking Mainnet
+
+Forking is a valuable tool is a developer's box, it effectively takes a reference snapshot at a given block height on the provided chain. In practice, this allows us to interact with protocols as though we were interacting with them on mainnet.
+
+## Fork Tests in Foundry
+
+```bash
+forge test fork-url $MAINNET_RPC_URL
+```
+
+This command in foundry tells the framework to run your tests while referencing a fork of the provided RPC URL, allowing you to interact with mainnet contract locally.
+
+Another way to fork is within the test contract directly.
+
+```js
+function setUp() public {
+    vm.createSelectFork({blockNumber: 0, urlOrAlias: "mainnet"})
+}
+```
+
+> Note: `mainnet` will need to be set as an alias in your `foundry.toml` under a new variable `[rpc_endpoints]`
+
+```js
+[rpc_endpoints];
+mainnet = "{MAINNET_RPC_URL}";
+```
+
+With the above in place running the following will run your tests with respect to a fork of a live chain!
+
+```bash
+forge test
+```
+
+## Useful Resources &amp; Exercises
+
+If any concepts covered in this blog post seem confusing or new to you, take a moment to check out the Foundry Full Course here on Updraft ([**Foundry Fundamentals**](https://updraft.cyfrin.io/courses/foundry) & [**Advanced Foundry**](https://updraft.cyfrin.io/courses/advanced-foundry)) to level up those concepts and give you all the information you need to succeed here. These resources will expedite your learning and help you solidify the fundamental concepts.
+
+Before signing off, I'd encourage you to join the [Cyfrin Discord](https://discord.com/invite/NhVAmtvnzr). This is an excellent platform where you can connect, collaborate, and share insights with a diverse group of people working on similar goals.
+
+In addition to this, check out the [**Discussions on GitHub**](https://github.com/Cyfrin/security-and-auditing-full-course-s23/discussions) - this is a phenomenal place to get support and have your questions answered in a way that will be indexed by search engines and AI in an effort to improve the experience for people coming behind us.
+
+
+
+Congratulations on finishing the refresher! Take a break, you greatly deserve it for getting this far!
+
+---
+
+Section 1 NFT Challenge 👀
+
+[Refresher NFT (Arb)](https://arbiscan.io/address/0x7a0f40757f6ba868b44ce959a1d4b8bc22c21d59)
+
+[Refresher NFT (Sepolia)](https://sepolia.etherscan.io/address/0x76d2403b80591d5f6af2b468bc14205fa5452ac0)
+---
+title: Stateless Fuzzing, Stateful Fuzzing And Invariants/Properties
+---
+
+_Follow along the video_
+
+---
+
+## Testing the Unknown
+
+Often, hacks result from scenarios you didn't anticipate or consider for testing. But what if you could write a test that checks for every possible scenario, not just one? Welcome to the world of **Fuzz testing**.
+
+## What Is Fuzz Testing?
+
+Also known as _fuzzing_, this is all about supplying random data to your system in an attempt to break it. Imagine your code is an indestructible balloon. Fuzzing involves you doing random things (like poking, squeezing, or even kicking) to the balloon with the sole intention of breaking it.
+
+This makes it a useful technique for unearthing unexpected application failures. This lesson aims to walk you through the concept and practical application of fuzz testing.
+
+### The Fundamental Principle: Testing Invariants
+
+Each system, from a function to an entire program, has an integral property, often referred to as the _invariant_. This property must always hold true. For instance, you could have a function called `doStuff` that should always return zero, regardless of the value of the input. In such a case, returning zero would be the invariant of that function.
+
+Let's dark dive deeper into what such a function could look like:
+
+```js
+function doStuff(uint256 data) public {
+    if (data == 2){
+        shouldAlwaysBeZero = 1;
+    }
+    if(hiddenValue == 7) {
+        shouldAlwaysBeZero = 1;
+    }
+    hiddenValue = data;
+}
+```
+
+A unit test for this function would look something like this:
+
+```js
+function testIsAlwaysGetZero() public {
+    uint256 data = 0;
+    exampleContract.doStuff(data);
+    assert(exampleContract.shouldAlwaysBeZero() == 0);
+}
+```
+
+The above test is going to pass because in that specific situation (where `data == 0`), our invariant isn't broken.
+
+From the function above, you can expect that `should_always_be_zero` is always zero, regardless of the `data` value. But wait, what happens if our input is `2`? We get `should_always_be_zero` as `1`. That violates our invariant!
+
+Of course, this is a pretty straightforward example. But what if we have a function that looks a bit more complicated? Writing a test case for every scenario could be tedious or impossible. We need to adopt a more programmatic approach to test these cases en masse.
+
+## Introducing Fuzz Tests and Invariant Tests
+
+There are two popular methodologies when dealing with edge cases: using _fuzz tests/invariant tests_, or _symbolic execution_ (which we'll save for another day).
+
+> "Fuzz testing and Invariant testing are great tools to assess the robustness of your code."
+
+Let's consider an example of a fuzz test in Foundry. Here, we set our data right in the test parameter, allowing Foundry to automate the process of providing random input data during tests.
+
+```js
+function testIsAlwaysGetZeroFuzz(uint256 data) public {
+    exampleContract.doStuff(data);
+    assert(exampleContract.shouldAlwaysBeZero() == 0);
+}
+```
+
+Foundry will automatically randomize data and use numerous examples to run through the test script. This test will be supplied random data from 0 to uint256.max(), as many times as you've conifigured runs.
+
+> Reminder: You can configure the number of runs in your foundry.toml under the [fuzz] variable
+
+Notably, this pseudo-random mechanism is not exhaustive. It won't provide a scenario for every single possible data input. That's why further understanding of how the Fuzzer generates random data is crucial.
+
+## Stateless Fuzzing versus Stateful Fuzzing
+
+Fuzzing also comes in flavours, the above being an example of `stateless fuzzing`. Another that is valuable to understand is `stateful fuzzing`. `Stateful fuzzing`, instead of resetting the contract state for each new run, will use the ending state of your previous run as the starting state of your next.
+
+This is important for situations like our `doStuff` function
+
+
+
+A stateful fuzz test would instead utilize the same contract we just triggered and call another function on it, creating an interlocking sequence of functions throughout a single run. Achieving this in Foundry requires using the `invariant` keyword and a bit of setup:
+
+First, we need to import `StdInvariant` from `forge-std` and inherit it in our test contract.
+
+```js
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0
+
+import {StdInvariant} from "forge-std/StdInvariant.sol";
+
+contract MyContractTest is StdInvariant, Test {...}
+```
+
+Then, in the setup of our test contract, we need to tell Foundry, which contract we'll be calling random functions on.
+
+```js
+function setUp() public {
+    exampleContract = new MyContract();
+    targetContract(address(exampleContract));
+}
+```
+
+Now our `stateful fuzz` test is going to look something like this:
+
+```js
+function invariant_testAlwaysReturnsZero() public {
+    assert(exampleContract.shouldAlwaysBeZero() == 0);
+}
+```
+
+With the above test, Foundry is going to call random functions on the `targetContract` (in our case `doStuff` repeatedly, but were there other functions, they would be called in a random order) and pass those functions random data.
+
+## In Summary
+
+Fuzz testing involves mainly understanding your system's invariants and writing tests that can execute numerous scenarios. This is either achieved through `stateless fuzzing`, which provides random data alone with each run independent of the last, or `stateful fuzzing`, allowing both random data and random function calls subsequently on the same contract. This is the new standard for web3 security.
+
+Going forward, aim to fully understand the invariants in systems you're working on, and write fuzz tests to ensure they are not broken
+
+> "Fuzz testing is a technique that some of the top protocols are yet to adopt, yet it can aid in discovering high severity vulnerabilities in smart contracts." - Alex Rohn, co-founder at Cyfrin.
+
+Next lesson we're going to talk about common Ethereum Improvement Proposals (EIPs)!
+---
+title: Storage
+---
+
+_Follow along the with the video_
+
+---
+
+In this lesson, we are going to discuss some important aspects related to variables in Solidity. Much of what we'll cover is conveniently summarized in the [**Solidity documentation**](https://docs.soliditylang.org).
+
+## Understanding Global Variables and Storage
+
+First and foremost, we need to familiarize ourselves with the concept of `Storage`. In Solidity, when we refer to variables that are global or those that persist over time, we are actually referring to variables that exist in `Storage`.
+
+
+
+Think of `Storage` as a huge array or list that contains all the variables we create in Solidity. When we declare a variable in a contract—say a contract named `fundamentalStorage`—to be a certain value, such as `favoriteNumber`, we're essentially demanding this variable to persist. This persistence is obtained via `Storage`.
+
+In code this looks like:
+
+```js
+contract fundamentalStorage {
+    uint favoriteNumber;
+}
+```
+
+This `favoriteNumber` variable is stored in the `Storage` and can be called whenever required.
+
+Now, `Storage` is essentially an array where every variable (and its value) gets slotted into a 32 byte long slot. This is crucial in understanding how Solidity manages memory and data storage. The indexing of these storage slots starts from 0, and increments just like array indexing in most languages.
+
+```javascript
+contract fundamentalStorage {
+    uint favoriteNumber = 25;
+    bool ourBool = true;
+}
+```
+
+For instance, if a variable—`favoriteNumber`—is assigned the number 25, this number is stored in its bytes implementation `0x19`.
+
+## Dealing with Dynamic Variables
+
+While static variables are straightforward, things get slightly intricate with variables that are of dynamic length or can change length. Variables in the form of dynamic arrays or mapping are stored using some type of hashing function (outlined in the documentation).
+
+The object itself does take up a storage slot, but it doesn't contain the whole array. Instead, the storage slot contains the length of the array. If we add a new element to the array by calling `myArray.push(222)`, the array's length and the new element are stored at separate locations determined by the hash function.
+
+```js
+contract exampleContract {
+    uint[] myArray;
+
+    function addToArray(uint _number) public {
+        myArray.push(_number);
+    }
+}
+```
+
+In the code example above, `myArray.length` is stored in `storage slot [0]`, while the elements within the array (myArray.push(\_number)) are stored at `storage slot [keccak256(0)]`.
+
+## Constant and Immutable Variables
+
+Interesting to note is the fact that constant and immutable variables do not occupy spots in `Storage`. This is because such variables are incorporated within the bytecode of the contract itself. Solidity automatically substitutes any reference to these variables with their declared values.
+
+```js
+contract exampleContract {
+    uint constant x = 123;
+}
+```
+
+In the example above, the constant variable `x` does not occupy a storage slot.
+
+## Temporary Variables: Function Scope
+
+For variables that are declared inside a function, their existence is ephemeral and scoped merely to the span of that function. These variables do not persist inside the contract and are not stored in `Storage`. Instead, they're stashed in a different memory data structure, which deletes them as soon as the function has finished execution.
+
+```js
+contract exampleContract{
+    function myFunction(uint val) public {
+        uint newVar = val + 5;
+    }
+}
+```
+
+In this example, `newVar` only exists for the duration of `myFunction`.
+
+## Memory Keyword: Necessary for Strings
+
+Finally, the `memory` keyword. Primarily used with strings, `memory` is needed because strings are dynamically sized arrays. By using this keyword, we tell Solidity that string operations are to be performed not in `Storage`, but in a separate memory location.
+
+Solidity needs this explicit instruction because arrays and mappings require more space, hence the need to ensure that space is allocated in the appropriate data structure.
+
+Here's a code snippet using `memory` keyword with string:
+
+```javascript
+contract exampleContract{
+    function getString() public pure returns (string memory) {
+        return "this is a string!";
+    }
+}
+```
+
+All of what we've covered here is outlined in detail in the Solidity Documentation. Understanding these concepts and how Solidity handles variables is integral to attaining a deeper understanding of the language and compiler.
+
+> "Understanding the nitty-gritty of Solidity variables and storage will significantly amplify your solidity coding skills."
+---
+title: Tooling Pre-requisites
+---
+
+_Follow along with this video_
+
+---
+
+## Pre-requisite Tools
+
+Before we get deep into coding, there are some useful tools we're going to be using throughout the course. Best to prepare them now.
+
+Firstly, you will need some kind of IDE or text editor. I like to use [**Visual Studio Code**](https://code.visualstudio.com/). For those of you more security and privacy focused you may want to check out [**VSCodium**](https://vscodium.com/) which removes a lot of the Microsoft _stuff_.
+
+## Frameworks
+
+The primary framework we'll be working with in this course is Foundry. You can view installation instructions for that [**here**](https://book.getfoundry.sh/getting-started/installation).
+
+But hey, if you’re more familiar with [**Hardhat**](https://hardhat.org/), [**Brownie**](https://eth-brownie.readthedocs.io/en/stable/), or any other framework, don't stress; you can absolutely follow along using your tools. We'll be tackling some Foundry-specific tasks, but you're always welcome to adapt them for your framework of choice.
+
+> Remember: You can use commands `foundryup` to update your Foundry tools and `forge --help` to access a help guide.
+
+Additional Foundry specific features we'll be using include `cast` and `chisel`, both of which we'll learn more about in this course.
+
+## Coding Environment
+
+If you're using a PC with Windows, ensure you're using **Windows with WSL**.
+
+This tool ensures the Linux terminal commands we run are compatible with your machine too. There's a brilliant [**guide by Vasiliy**](https://youtu.be/umepbfKp5rI?feature=shared&t=23546) walking you through the WSL installation process if you need it.
+
+For Linux and Mac users, you can simply stick with the environments you're already using.
+
+AI tools like [**Phind**](https://www.phind.com/) or [**ChatGPT**](https://www.chat.openai.com) aid in seeking answers when things get tough. One nifty feature **Phind** offers is web searching; you can query "_install Foundry for the ETH ecosystem_", and the tool will surf the web, compile an answer, and offer you a digestible solution for your query!
+
+
+
+## Web3 Is About Community
+
+I highly recommend you consider creating accounts on platforms like:
+
+- [**Peeranha.io**](https://peeranha.io/) - A great platform for discussion and QA for Web3
+- [**Ethereum Stack Exchange**](https://ethereum.stackexchange.com/) - One of _the_ best blockchain developer resources available
+  and of course
+- [**GitHub**](https://www.github.com) - Every developer needs an account here. It's objectively the best space online to collaborate, discuss and share coding support.
+
+Remember to jump in and ask questions. Don't pretend to have answers when you don't. The learning experience is about being humble and is most rewarding to those willing to ask questions and seek clarity. Embrace the "I don't know, and I will find out" attitude.
+
+> One of the worst things you can do as a security researcher is pretend to know something you don't.
+---
+title: What is an ERC20/EIP20?
+---
+
+_Follow along the with the video_
+
+---
+
+## What are ERC20 tokens?
+
+Firstly, let's define what ERC20s are. ERC20s are tokens that exist and function on a blockchain network using a predefined standard called [the ERC20 token standard](https://ethereum.org/en/developers/docs/standards/tokens/ERC20/). This standard is essentially a set of rules that dictate certain functions a token should have, allowing it to interact seamlessly with other tokens on the network.
+
+However, the magic doesn't just stop at being tokens. ERC20s are also smart contracts. This hybrid nature allows ERC20 tokens to embody complex functionalities on the blockchain. Isn't that cool? A few notable examples of ERC20s include tokens like Tether, Chainlink, Uni and DAI.
+
+> **Note:**Chainlink technically falls under the ERC-677 standard, a higher standard that introduces additional functions while still retaining compatibility with the original ERC20 standard. So, you can think of Chainlink as an upgraded ERC20 token.
+
+## Why care about ERC20 tokens?
+
+At this point, you might be wondering, "Why should I even care to make an ERC20 token?". Well, there are a number of compelling reasons.
+
+ERC20 tokens find extensive use in a number of areas. They can serve as governance tokens, allowing token holders to vote on various matters within a DApp (Decentralised Application). They can be used to secure the underlying network. They can also represent some type of static asset, and much more. The sky's the limit when it comes to what you can achieve with ERC20 tokens.
+
+## How to create an ERC20 token
+
+Now that we've addressed the 'what' and 'why' of ERC20 tokens, let's delve into the 'how'. You can create your very own ERC20 token by crafting a smart contract that conforms to the ERC20 token standard.
+
+An ERC20 compliant smart contract needs to have certain functions - `name()`, `symbol()`, `decimals()`, to name a few. These functions are called to retrieve information about the token. Furthermore, functionalities such as transferring tokens and checking the balance of tokens must also be included in the smart contract.
+
+Of course, the ERC20 is not the be-all and end-all. There are several other upgraded token standards, such as the [ERC-677](https://github.com/ethereum/EIPs/issues/677) and the [ERC-777](https://eips.ethereum.org/EIPS/eip-777) that you might want to check out. These other standards provide additional functionality while maintaining full compatibility with the ERC20 standard.
+
+To sum up, ERC20 tokens are versatile and powerful constructs in the blockchain realm. Whether you wish to create your own token for a DApp, or simply wish to understand the underlying mechanics of various tokens, gaining a strong grasp on ERC20 tokens can undoubtedly open a plethora of avenues for you. Happy learning!
+---
+title: Upgradeable Contracts
+---
+
+_Follow along with the video_
+
+---
+
+## Upgradeable Contracts
+
+In this section we're going to ask ourselves `what is a proxy?` and `how does delegateCall` work? in an effort to better understand the advantages and disadvantages of upgradeable smart contracts.
+
+All the code we'll be working with here is available in the Upgrades repo of the Foundry Course, available [**here**](https://github.com/Cyfrin/foundry-upgrades-f23/tree/main).
+
+## SmallProxy.sol
+
+Let's take a look at a simple proxy example:
+
+```js
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/proxy/Proxy.sol";
+
+contract SmallProxy is Proxy {
+    // This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1
+    bytes32 private constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+
+    function setImplementation(address newImplementation) public {
+        assembly {
+            sstore(_IMPLEMENTATION_SLOT, newImplementation)
+        }
+    }
+
+    function _implementation() internal view override returns (address implementationAddress) {
+        assembly {
+            implementationAddress := sload(_IMPLEMENTATION_SLOT)
+        }
+    }
+}
+```
+
+> Note: we're importing `Proxy.sol` from [**openzeppelin**](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/Proxy.sol) as a boilerplate proxy for our example.
+
+### Preface to Yul
+
+The contract we're importing here uses a lot of `Yul`.
+
+> "`Yul` is an intermediate language that can be compiled to bytecode for different backends." - [**Solidity Docs**](https://docs.soliditylang.org/en/latest/yul.html)
+
+We won't go too deeply into `Yul`, but please read more in the documentation if it interests you. Note, however, even if you're a really advanced user, avoiding the implementation of really low-level calls is preferred. It's much easier to make significant errors, the lower you are in your code.
+
+### Proxy.sol - a closer look
+
+Within our `Proxy.sol` contract, we've got the `_delegate()` function. This function is called by `Proxy.sol`'s `fallback()` function. This means any time our contract received data for a function it doesn't recognize, it's going to call our `_delegate()` function.
+
+The `_delegate()` function, then sends that data over to some `implementation` contract.
+
+
+
+Looking at `SmallProxy.sol` you can see you have these two functions:
+
+```js
+function setImplementation(address newImplementation) public {
+        assembly {
+            sstore(_IMPLEMENTATION_SLOT, newImplementation)
+        }
+    }
+
+    function _implementation() internal view override returns (address implementationAddress) {
+        assembly {
+            implementationAddress := sload(_IMPLEMENTATION_SLOT)
+        }
+    }
+```
+
+- **setImplementation()** - changes the implementation contract, effectively allowing a protocol to upgrade.
+- **\_implementation** - reads the location of the implementation contract
+
+You may also have noticed `bytes32 private constant _IMPLEMENTATION_SLOT = ...` this is the storage slot where we are storing the address of our implementation contract. You can read more about `Standard Proxy Storage Slots` in [**EIP-1967**](https://eips.ethereum.org/EIPS/eip-1967)
+
+Let's consider a basic implementation contract:
+
+```js
+contract ImplementationA {
+    uint256 public value;
+
+    function setValue(uint256 newValue) public {
+        value = newValue;
+    }
+}
+```
+
+Now we ask ourselves `What data needs to be passed to my proxy contract in order to call this function?`
+
+If you recall from the last lesson, this data being passed is going to be the encoded function signature and any necessary arguments the function requires! We can get this encoding with a couple helper functions added to `SmallProxy.sol`:
+
+```js
+// helper function
+    function getDataToTransact(uint256 numberToUpdate) public pure returns (bytes memory) {
+        return abi.encodeWithSignature("setValue(uint256)", numberToUpdate);
+    }
+```
+
+Now let's use a little assembly to read the storage slot this value is set to:
+
+```js
+function readStorage() public view returns (uint256 valueAtStorageSlotZero) {
+        assembly {
+            valueAtStorageSlotZero := sload(0)
+        }
+    }
+```
+
+With that all set up, here's what we'd do next:
+
+1. deploy both `SmallProxy.sol` and `ImplementationA.sol`
+2. call the `setImplementation()` function on `SmallProxy.sol`, passing it `ImplementationA`'s address as an argument
+3. acquire the data needed for the transaction being sent
+   > By passing `777` to our `getDataToTransact()` function we have returned: `0x552410770000000000000000000000000000000000000000000000000000000000000309` this encodes the `function signature` with the passed arguement of `777`.
+
+When this is passed to our proxy contract, the contract won't recognize the function signature, will call `fallback()` (which calls `_delegate()`) and pass the data to our implementation contract which DOES recognize this data!
+
+4. Send transaction with the data
+
+Now, when we call the `readStorage()` function, we can see that the value on our proxy contract has indeed been set to `777`!
+
+This is a great illustration of how data is routed from our proxy contract to the implementation contract. Let's see what happens when we upgrade things by changing the implementation contract.
+
+If we deploy a new implementation:
+
+```js
+contract ImplementationB {
+    uint256 public value;
+
+    function setValue(uint256 newValue) public {
+        value = newValue + 2;
+    }
+}
+```
+
+...and subsequently pass this new address to our proxy's `setImplementation()` function...
+
+```js
+function setImplementation(address implementationB);
+```
+
+When we then pass the same data as before to our proxy contract, we can indeed see this is reaching `implementationB` and we're having returned `newValue +2`!
+
+
+
+---
+
+### Wrap up
+
+Now, with this understanding in hand, it's easy to see the power proxies hold. On one hand, they are very convenient and afford developers some safeguard if things should need to change. On the other - if this process is controlled by a single (or small group) of wallets, this opens the door to some high risk centralization concerns.
+
+Next, we'll be looking at `selfDestruct` and how it can be used to circumvent intended contract funtionality!
+---
+title: Installing Libraries
+---
+
+_Follow along the with the video_
+
+---
+
+We'll go over Fuzz and Invariant testing in more detail later. For now, let's briefly go over importing valuable libraries into our code base.
+
+### OpenZeppelin Contracts and ERC20
+
+Say, you're working on a project and you'd like to include an `ERC20`, but are unsure where to start. This is where [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) come into play. This popular library, available on GitHub, provides prewritten contracts for your use, making your life a whole lot easier!
+
+Use the following command to install this library to your project directory:
+
+```shell
+forge install OpenZeppelin/openzeppelin-contracts --no-commit
+```
+
+### Configuring Project Files and Creating New Contracts
+
+Now, navigate to the `foundry.toml` file in your project directory. Here, specify the remappings by setting `@openzeppelin/contracts` equal to `lib/openzeppelin-contracts/contracts`. This sets up the path for the compiler to locate OpenZeppelin contracts.
+
+```markdown
+remappings = ['@openzeppelin/contracts=lib/openzeppelin-contracts/contracts']
+```
+
+Once remapped, the library and it's contracts can be imported into your project like so:
+
+```js
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+
+contract MyToken is ERC20 {
+    constructor() ERC20("MyTokenName","MTN") {};
+}
+```
+
+For those who might need a brush up on what exactly ERC20 is or are curious about other types of tokens like the ERC721 (also known as NFTs), stay tuned as we'll be covering them in our upcoming discussions.
+---
+title: Solidity Pre-requisites
+---
+
+_Follow along with this video_
+
+---
+
+Alright! All of the pre-requisites I've mentioned so far, and those mentioned here can be found in the Foundry Full Course ([Fundamentals](https://updraft.cyfrin.io/courses/foundry) _and_ [Advanced](https://updraft.cyfrin.io/courses/advanced-foundry))
+
+## The Prerequisites: Solidity Basics
+
+To keep up with this course, you should be familiar with all the basic functions of [Remix](https://remix.ethereum.org). This includes `compiling`, and `deploying` to both local and testnet blockchains.
+
+All of the basic Solidity, variable types, contract structure etc should be second nature.
+
+## Foundry Familiarity
+
+You should also be familiar with the working environments of Foundry, or your framework of choice. You should understand how to initialize a project in your framework and navigate it's working tree.
+
+
+
+
+
+Commands like these should ring lots of bells.
+
+```shell
+forge init
+forge build
+forge test
+```
+
+The basic code seen in the Foundry example contracts should be things you recognize as well.
+
+```js
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+
+contract Counter {
+    uint256 public number;
+
+    function setNumber(uint256 newNumber) public {
+        number = newNumber;
+    }
+
+    function increment() public {
+        number++;
+    }
+}
+```
+
+---
+
+## Testing
+
+The Foundry example test setup contains two distinct test types, a regular test and a fuzz test. These distinctions you should be a little familiar with, but we'll definitely go more indepth throughout this course.
+
+### Exploring Test Types: Regular Test and Fuzz Test
+
+In the regular test, we merely incept the counter contract and increment it, ensuring the counter number equals one. The Fuzz test, however, involves passing a random number into our test.
+
+As you may recall, we run this test with a certain number of runs, using different random numbers. No matter the chosen value for X, the test will always hold.
+
+How do we change the number of fuzz runs? Simply browse to Foundry's TOML file and copy the variable.
+
+```md
+[fuzz]
+runs = 256
+max_test_rejects = 65536
+seed = "0x3e8"
+dictionary_weight = 40
+include_storage = true
+include_push_bytes = true
+```
+
+In the TOML file, you have the ability to set the number of runs. For instance, we could change it from 256 to 600.
+
+```shell
+$ forge test
+```
+
+Voila! You'll see that the test Fuzz ran 600 times. This indicates that the test ran with 600 different random numbers.
+
+```bash
+Running 1 test for test/Counter.t.sol:CounterTest
+[PASS] testFuzz_SetNumber(uint256) (runs: 600, μ: 27398, ~: 28409)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 14.63ms
+
+Ran 1 test suites: 1 tests passed, 0 failed, 0 skipped (1 total tests)
+```
+
+## Advanced Fuzzing: Stateful Fuzzing and Invariant Tests
+
+On to the next level – **stateful fuzzing**, also popular as invariant tests in the Foundry universe. This aspect of coding might not be your forte yet, but no worries, that's what we're here for.
+
+Let's look more closely at fuzzing and invariant testing in our next lesson.
+---
+title: Fallback and Receive
+---
+
+_Follow along with the video_
+
+---
+
+In the world of Solidity smart contracts, it's important to understand the fallback and receive functions. By default, Solidity smart contracts reject any Ether (ETH) sent to them. In order to enable your contract to accept ETH, we would implement `fallback` and `receive` functions. Let's look at these mose closely.
+
+## What are the Fallback and Receive functions?
+
+These two specific functions - `fallback` and `receive` - enable a contract to accept and react to native ETH sent to it. Both these functions can be made "**external payable**", indicating that they can receive and handle ETH.
+
+So, how do they function? Here's the core logic to give you a better understanding:
+
+
+    
+
+
+To put it simply, consider the case of sending ETH to a smart contract without any data. In such an instance, the `receive` function would be called, resorting to `fallback` if the `receive` function does not exist.
+
+On the other hand, if there _is_ data, Solidity will skip straight to the `fallback` function, bypassing the `receive` function entirely.
+
+## Default Settings in Solidity
+
+It is worthwhile to note that the `fallback` function may or may not be payable. If the contract lacks a `receive` function and the `fallback` function isn't payable, then the `fallback` function won't be called when you send ETH to the contract.
+
+```js
+fallback() external{}
+receive() external payable {}
+```
+
+By the same token, a contract that does not contain any of these functions will reject any ETH sent to it. In fact, Solidity will automatically compile this contract to reject ETH - with at least one notable exception we'll go over later.
+
+## Deepening Understanding: Encoding
+
+The next lesson is a clip you might remember from the Foundry Course. We're going to go over encoding and explain how it can be used to call any function on any contract from another contract.
+
+Let's do it.
+---
+title: Abi.encode & Abi.encodePacked
+---
+
+_Follow along with the video_
+
+---
+
+## Understanding ABI.encode & ABI.encodePacked in Solidity
+
+### Introduction
+
+The topic we're diving into is how to concatenate strings in Solidity, specifically exploring `abi.encode` and `abi.encodePacked`. This is advanced stuff, delving into the low-level workings of Solidity, binary, and opcodes. Remember, it's okay if you don't grasp it all on the first go!
+
+> Remember: You can find all the code we'll be working with [**here**](https://github.com/PatrickAlphaC/hardhat-nft-fcc/tree/main/contracts/sublesson).
+
+### Getting Started
+
+- **Setting Up:** We'll use Remix for this exploration. Start by creating a new file named `encoding.sol`.
+
+Your contract should look something like this:
+
+```js
+//SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.7
+
+contract Encoding {
+    function combineStrings() public pure returns (string memory) {
+        return string(abi.encodePacked("Hi Mom! ", "Miss you."));
+    }
+}
+```
+
+Compiling this contract and calling the `combineStrings()` function in Remix is going to give us the whole string `"Hi Mom! Miss you."`
+
+### Exploring `abi.encode` and `abi.encodePacked`
+
+- **Understanding Encoding:** We use `abi.encode` and `abi.encodePacked` for encoding strings and other data types into a binary format. In our function above `"Hi Mom!"` and `"Miss you."` are both converted into binary then concatenated. We then typecast the returned binary is a string.
+
+`encode` and `encodePacked` are examples of globally available methods in Solidity. There's a [**Cheatsheet**](https://docs.soliditylang.org/en/latest/cheatsheet.html) you should checkout with more information and tonnes of examples of these globally available methods and variables.
+
+> Note: As of `Solidity 0.8.12` you can also use `string.concat(stringA, StringB)` to achieve the same result as our `"Hi Mom!"` example.
+
+Before getting to deep with encoding, let's take a step back to understand what's happening when we send a transaction.
+
+### Compilation Breakdown
+
+
+
+As seen in the image above, when we compile a smart contract, the solidity compiler is returning two things `contract.abi` and `contract.bin`. The `abi` you likely remember from previous lessons.
+
+`Contract.bin` is the binary representation of your contract. This is the actual code that get put on the blockchain.
+
+We see this binary object in transaction we send to the blockchain. Recall what constitutes a transaction:
+
+```js
+tx = {
+  nonce: nonce,
+  gasPrice: 10000000000,
+  gasLimit: 1000000,
+  to: null,
+  value: 0,
+  data: "BINARYGOESHERE",
+  chainId: 1337,
+};
+```
+
+> Note: When we're deploying a new contract, this is still a transaction on the blockchain, but our `to` property is empty and the `data` field will contain both the `contract init code` and `contract bytecode(binary)`.
+
+[**Here's**](https://etherscan.io/tx/0x112133a0a74af775234c077c397c8b75850ceb61840b33b23ae06b753da40490) a transaction on etherscan.io with a binary data object you can inspect.
+
+At first look, the binary data in a transaction looks like chaos. Just a garbled mess of letters and numbers. You may be asking yourself - how does the EVM (Ethereum Virtual Machine) make any sense of these instructions?
+
+Well ...
+
+### Intro to EVM Opcodes
+
+> Opcodes are the building blocks of EVM instructions. Each opcode represents a specific operation.
+
+Opcodes are effectively the alphabet of the ethereum machine language. Each pair of characters in the binary object discussed above represents an Opcode with pertains to a specific operation to be performed.
+
+You can find a list of the EVM Opcodes [**here**](https://www.evm.codes/?fork=shanghai).
+
+This means that the binary object we pass in our blockchain transactions is ultimately a long list of these operations we're telling the EVM to perform.
+
+### Why This Matters
+
+Until now we've only used `encode` and `encodePacked` to concatenate strings, but in reality these functions are much more powerful. You can encode virtually anything into its binary format.
+
+- **abi.encode** - returns the binary of the provided argument
+- **abi.encodePacked** - returns the binary of the provided argument, but with stipulation/compression
+  - types shorter than 32 bytes are concatenated directly, without padding or sign extension
+  - dynamic types are encoded in-place and without the length.
+  - array elements are padded, but still encoded in-place
+
+Read more about [**Non-standard Packed Mode**](https://docs.soliditylang.org/en/latest/abi-spec.html#abi-packed-mode)
+
+The other side to this whole equation is that we also have the ability to _`decode`_ things.
+
+
+
+and finally .. we can even `multiEncode` and `multiDecode`.
+
+## 
+
+# Conclusion
+
+Hopefully this lesson has shed some light on some of the finer details of using encoding functions in solidity and the power they can hold. In the next lesson we'll be looking at how to encode function calls directly.
+---
+title: Introduction to Enconding Function Calls Directly
+---
+
+_Follow along with the video_
+
+---
+
+## Understanding ABI Encoding
+
+With the previous lesson's foundation laid, lets look at what encoding is like within the context of sending transactions.
+
+We know the EVM is looking for this encoded information, this binary _stuff_. And since transactions sent to the blockchain are ultimately compiled down to this binary, what this allows us to do is populate the `Data` property of a transaction with this binary ourselves.
+
+
+
+     
+    Remember the properties of a Transaction
+
+
+
+### ABI Encoding and Transactions
+
+When an Ethereum transaction is initiated, it is essentially reduced to binary code. This transformation pertains not just to a contract deployment but also a function call. In both cases - transactions and function calls - the data field holds the key.
+
+In a contract deployment, the data field contains the contract's binary code. But for a function call, the data field holds the instructions about what data to send and which function to address.
+
+Let's dive into an example. If we inspect a transaction on Ethereum using Etherscan, you'll notice a field labeled 'Input data.' Within this field, you'll discover a jumble of hexadecimals - this is the encoded function call.
+
+**Example Input Data**
+
+```js
+Function: enterRaffle(...)
+Method ID: 0x2cfcc539
+```
+
+This `Method ID`, sometimes referred to as a `function signature`, is an encoding of that particular function, including it's name and argument types.
+
+This encoded function call in the data field is how the EVM, or any EVM compatible chain, deciphers which function should be executed.
+
+### Direct Function Calls
+
+
+
+With our understanding of ABI encoding, the possibilities expand. We're now able to populate the data field of our transactions directly with the binary or hex code corresponding to the desired function call. Remember, when you initially compile your transaction, `data` was a field that existed? This is where that comes into play.
+
+You may wonder why this ability is any better than directly using the interface or the Application Binary Interface (ABI). However, there could be scenarios when you might only possess the function name or the parameters. You might even want your code to make arbitrary calls, dangling at the edge of advanced programming. This is when knowing how to populate the data field directly becomes pivotal.
+
+### Sending the Transactions
+
+So, how do we transform this understanding into action - how do we populate the data field and then send these custom, data-encoded transactions?
+
+In solidity, we rely on some low-level keywords - `staticcall` and `call` - to perform this function. `staticcall` and `call` are used for view or pure functions and functions that change the blockchains' state, respectively.
+
+In these functions, the code that specifies a particular function to execute goes into the parentheses (data field). For instance, in a previous function utilized for our lottery contract,
+
+```js
+function withdraw(address recentWinner) public {
+    (bool success, ) = recentWinner.call{value: address.(this).balance}("");
+    require(success, "Transfer Failed");
+}
+```
+
+the `{value: address.(this).balance}` segment updates the transaction's value field while the empty parentheses imply there's no function to call; the transaction merely sends money.
+
+However, if a function needs to be executed or data should be sent, it can be specified in the parentheses, let's combine this with our previous `Method ID` we got from etherscan.
+
+```js
+function enterRaffle(uint256 entryFee) public payable {
+    PuppyRaffle puppyRaffle = new PuppyRaffle;
+    puppyRaffle.call{value: entryFee}("0x2cfcc539");
+}
+```
+
+In the above example, you can see that we're passing the `entryFee` as an argument to the `value` property of the transaction and in the `data` field we are populating the `function signature`. This will tell the EVM, what to call, where and how much to send.
+
+### Wrap Up
+
+To wrap it up, remember that although the realm of Ethereum and EVM might seem overwhelming at first, understanding their machinations, such as ABI encoding, one concept at a time allows you to become an active participant in the blockchain network, enhancing your ability to interact effectively and perform more advanced operations.
+
+> "The function of good programming is to do the thinking for you, to the extent possible, so that when you're using it, your mind is free to think." - Joshua Bloch
+---
+title: What is an ERC721/NFT?
+---
+
+_Follow along the with the video_
+
+---
+
+The buzz around non-fungible tokens (NFTs) or `ERC721s` lately is becoming impossible to ignore, especially within the spheres of art and blockchain technology. NFTs, originally authored on the Ethereum platform, present a unique form of digital asset that holds the potential to revolutionize the world of art, gaming and beyond. But what exactly are they?
+
+## Understanding NFTs
+
+NFT stands for non-fungible token. Unlike `ERC20` tokens, such as LINK, DAI etc, each NFT is entirely unique, and no two tokens can be interchanged.
+
+To better understand, let's look at a simple analogy. Think of a dollar bill; it holds the same value as any other dollar out there. You can freely exchange a dollar for another, and their value remains the same. This makes them _fungible_. Contrastingly, an NFT is the complete opposite. It could be likened to a unique Pokemon. Each Pokemon is unique and no two Pikachu's are exactly the same.
+
+As a more relatable analogy, consider an NFT as a distinct piece of art, trading card, or any other one-of-a-kind item. So to sum up, NFTs are unique, non-interchangeable tokens best thought of as indestructible digital pieces of art with a permanent history detailing their ownership and alterations.
+
+## The Many Uses of NFTs
+
+Although NFTs are mostly associated with art, they extend beyond that. They can be assigned any property, or manipulated in any way you like, thanks to the underlying smart contract technology.
+
+
+
+    
+     
+    An NFT example from Milady
+
+
+
+These unique tokens are deployed on a smart contract platform and can be traded on numerous NFT platforms such as [OpenSea](https://opensea.io/) or [Rarible](https://rarible.com/). While these decentralized marketplaces provide user-friendly interfaces for trading NFTs, one could just as easily buy and sell outside of them.
+
+## NFTs: Bridging the Gap for Artists
+
+Many might find the whole concept of NFTs puzzling. Isn't art meant to be tangible? But consider this: artists often aren't adequately compensated for their work. Their creations get copied and shared with zero attribution; they simply lose ownership. But with NFTs, artists can finally get the recognition, and more importantly, the compensation they deserve.
+
+> "Having a decentralized royalty mechanism, or some type of mechanism where these artists can get accurately comped for what they're doing, is crucial."
+
+Yes, NFTs can be a solution to current issues plaguing the art industry by creating an auditable and transparent trail of royalties without the need for any centralized service.
+
+## The Role of the ERC721 Standard
+
+`ERC721`, or the NFT standard, forms the basis of it all. To keep it simple, the main distinction between `ERC721` and `ERC20` tokens is that each `ERC721` token has a unique Token ID, an attribute that indirectly represents the asset linked to that token.
+
+To illustrate the unique attributes of an asset, let's say a piece of art or a character in a game, NFTs rely on metadata and `Token URIs`. Due to the prohibitively high gas prices on Ethereum, it's quite impractical to store these intricate art pieces directly on the chain.
+
+## How Token URIs Work
+
+The solution? The developers introduced what is known as a `Token URI` in the NFT standard—a universally unique identifier that provides information about what an asset (or token) looks like, and the attributes of that token. Data storage platforms like IPFS or a centralized API usually provide this `Token URI` through a simple API call.
+
+The `Token URI` should return data in a preset format, including the name, image location, description, and any other attributes that add to the uniqueness of the token.
+
+However, storing metadata off-chain does come with its challenges. If the centralized system hosting these assets crashes, every link associated with your NFT is lost. Modern discussions in the NFT world often debate the pros and cons of on-chain metadata versus off-chain metadata. Regardless of the limitations, there's something truly groundbreaking about NFTs, and it's exciting to envision where this technology could lead us.

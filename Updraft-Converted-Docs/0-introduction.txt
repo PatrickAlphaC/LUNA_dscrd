@@ -1,0 +1,274 @@
+---
+title: Welcome to the ultimate Solidity Course
+---
+
+_Follow along with this video_
+
+---
+
+## The Future of Web3: A focus on Security
+
+Welcome to the future of Web3 security; welcome to what is possibly the most comprehensive course on this subject ever created! As smart contract developers continue to bloom, it becomes imperative to ensure that the security scene keeps up. That’s the core focus of this guide - to level up the game and ensure a safer environment in the Web3 space.
+
+> _"Security is one of the most important things to unlocking the future of Web3."_
+
+With multiple detailed courses delivered in the past, dedicated to helping novice and intermediate smart contract developers enhance their skills. The accompanying study materials have garnered over 5.5 million views, making them the most-watched smart contract development courses on the planet. Thousands of budding developers have thus started their Web3 journey, equipped with the right knowledge and skills. They are now activated and productive developers in the Web3 space.
+
+This guide, however, is not for the newcomers. It's an advanced course aimed at those familiar with smart contracts and comfortable with terms like _storage_, _self-destruct_, _fallback functions_, and _ERC20s_. A refresher will be offered at the beginning, but the primary focus will be to provide learners with intensive training in smart contract auditing and research.
+
+## Expert Opinions Matter
+
+It's always enriching to learn from the best, and this guide takes care of that too. Featuring guest lecturers who are renowned experts in smart contract development:
+
+1. Josselin from Trail of Bits
+2. Owen from Guardian Audience
+3. Andy from Sigma Prime
+4. Johnny Time from Gingersec
+5. Pashov, legendary security researcher.
+6. Hans, one of the top competitive auditors.
+7. Tincho, the former lead auditor at Openzeppelin.
+
+With these experts by your side, not only will you gain in-depth insights, but also get to explore extensive and carefully curated code samples. A special shout-out to Tincho, who has been actively supporting the development and auditing of the codes that will be discussed in detail.
+
+## Mastering The Skills: Developer to Researcher
+
+People planning to take up this course should have a basic understanding of blockchain basics, solidity fundamentals, and working with a smart contract framework such as Hardhat or Foundry. We will primarily focus on Foundry in this guide, but the skills learned can easily be transferred to other frameworks as well.
+
+The course is not just for auditors; it is also aimed at training security researchers. Because who better to explore and learn about new attacks and analyze possible advances in smart contract technologies than a researcher?
+
+The [GitHub repo](https://github.com/Cyfrin/security-and-auditing-full-course-s23) associated with the course offers a detailed curriculum and additional resources. If you are already familiar with certain sections, feel free to skip directly to the ones that you need help with or wish to learn more about.
+
+## A Peek into the Future
+
+We want you to learn effectively, and that's where Cyfrin Updraft comes into play. It's a tool developed to HyperCharge your learning experience and help you grasp things faster. It’s free to sign up for those interested.
+
+You are perfectly up to speed with the prerequisites if you have already taken the Foundry full course. Access more resources to get up to speed in the GitHub repo associated with the post.
+
+## About the Author
+
+My name is Patrick Collins, and I am a smart contract developer, educator, security researcher, co-founder of Cyfrin Audits. As an absolute lover of Web3 and smart contract development, I believe that the ability to do fantastic things rests within this sphere. I delight in fueling driven individuals with the knowledge to become productive and start doing amazing things.
+
+Armed with unique insights from top competitive auditors like Hans, independent auditors like Pashov, and seasoned security veterans like Tincho, this blog endeavors to jump-start your security and auditing career. It encapsulates everything learned so far and aims to equip you with the right knowledge to become a positive force in the smart contract security auditing and safety space.
+
+Let's get Froggy. 🐸
+---
+title: Exercises
+---
+
+_Follow along with this video_
+
+
+
+---
+
+### Section 0: Excercises
+
+The first exercise is important. This is **just for you**. This isn't meant to be a motivation to share with others, or chat about publicly, this is what inspired you to take the first step and what will continue to inspire you to take the next.
+
+_This is for you._
+
+Make it as long and detailed as possible. Pour your emotion into defining why you want this. Don't bullsh\*t yourself. There'll be opportunities to shout your accomplishments loudly - but this is just for you.
+
+---
+
+🎯 Exercise: `Write yourself a message about why you want this`
+
+This will be important for when things get hard
+Is it money? Save web3? Become someone?
+Write down as many reasons as possible.
+
+Section 0 NFT Challenge 👀
+
+[Welcome! (Arb)](https://arbiscan.io/address/0xf923431da74ecc873c4d641fbdfa2564baafca9f#code)
+
+[Welcome! (Sepolia)](https://sepolia.etherscan.io/address/0x39338138414df90ec67dc2ee046ab78bcd4f56d9)
+---
+title: The current state of web3 security
+---
+
+_Follow along with this video_
+
+
+
+---
+
+## The Current State of Web3 Security: A Crucial Call to Action!
+
+The current state of Web3 security is pretty objectively terrible. Let's look at where we're at and what needs to be done to improve security in the industry.
+
+### A Shocking Reality: Billions Lost in Hacks
+
+- **Billion-Dollar Troubles:** Did you know in 2022 alone, a jaw-dropping $3.1 billion was stolen in crypto hacks? And 2023 isn't looking much better. It's a call to arms for all of us in the Web3 space!
+- **DeFi's Dilemma:** Imagine this - about 7% of DeFi's total value is getting swiped by hackers. That's like saying, "Hey, deposit your money here, but there's a scary chance it might vanish!"
+
+### Attack Patterns: The Usual Suspects
+
+**Top Threats:**
+
+- Price oracle manipulation
+- reward manipulation
+- stolen private keys
+
+These represent only a few of the common attack vectors we see lately. Some vulnerabilities have been around for years and _still_ people are making these mistakes - I'm looking at you _reentrancy_. There's a clear lack of best practices and we need to push back!
+
+There's an amazing newsletter, every serious security researcher should sign up for called [Block Threat Intelligence](https://newsletter.blockthreat.io/) by Peter Kacherginsky.
+
+Just recently (as of October, 2023), we've seen multi-million dollar hacks, just in the last couple months.
+
+### The Big Picture: How do we move forward?
+
+- **Mainstream Hesitation:** With all these risks, no wonder big financial players are tiptoeing around Web3. It's incumbent upon us to make this space safer for mainstream adoption. How do we do accomplish this?
+- **Reducing the Risk:** It's simple - fewer hacks, more trust. More security focused education, fewer hacks.
+
+### The Bright Side: The future of Web3 Security
+
+Security in Web3 is improving every day.
+
+1. More and more people are moving into the security space in Web3. More auditors, more experts, more...safe!
+2. Education is improving in Web3 Security and Web3 as a whole. People are more informed of best practices and what to watch out for
+3. Tooling is improving - with AI and constantly developments in static analysis and vulnerability aggregation - we've never been more equipped to improve security in the space. [Solodit](https://solodit.xyz/) in particular is a tool we'll come back to again and again in this course.
+
+**Protocols Playing It Safe:** More and more Web3 protocols are investing in security. They're auditing their code, they're opening bug bounties for post deployment coverage, they're finally realizing that spending $1 Million on security now, is worth saving $100 Million in being hacked.
+
+We also have an increase of pre-deployment experts like:
+
+- Cyfrin
+- Trail of Bits
+- OpenZeppelin
+
+Competitive audit platforms ([CodeHawks](https://www.codehawks.com/)), independent security researchers like ([Pashov](https://twitter.com/pashovkrum)) and a greater security focus all come together to make me optimistic about the future of Web3 Security.
+
+### Yet, There's More to Do: Our Collective Mission
+
+- **Centralized Technology** is a big problem. Private keys being compromised, or offchain centralizing are regular vulnerabilities seen in the space.
+- **Lack of Post Deployment Practices** is something we'll cover later in the course. But needless to say, active monitoring practices and emergency triage in Web3 leave much to be desired. Few even leverage bug bounties to incentivize ongoing security on their protocol post launch.
+- **Not Following Best Practices**
+- **A Disconnect** seems to exist between the industry and security professionals. Audit(security review) != 100% Safe. If no one is reading the security reports, no one is any safer.
+
+### Wrapping Up: Your Role in Shaping Web3's Destiny
+
+This isn't just a course. It's a mission. Together, we can transform Web3 into a fortress of trust and innovation. Keep going for some exercises to sharpen your skills.
+---
+title: Security Course Trailer
+---
+
+_Follow along with this video_
+
+
+
+---
+
+---
+
+## Ultimate Smart Contract Security, Assembly, and DeFi Curriculum
+
+### Introduction
+
+**Welcome to the ultimate Smart Contract Security, Assembly, and DeFi Curriculum.** This course is designed to provide the most advanced and comprehensive training in EVM assembly, security auditing, and DeFi (Decentralized Finance).
+
+### Course Overview
+
+- **Target Audience:** This course is tailored for individuals seeking deep insights and extensive knowledge in smart contract security, assembly language in EVM (Ethereum Virtual Machine), and decentralized finance applications.
+- **Course Structure:** The curriculum is structured to cover the intricacies of security auditing, the fundamentals and advanced concepts of EVM assembly, and critical aspects of DeFi.
+
+### Objectives
+
+1. **Deep Understanding of Smart Contract Security:** Gain an in-depth knowledge of the security aspects vital for smart contracts in the blockchain ecosystem.
+2. **Proficiency in EVM Assembly:** Develop a solid understanding and hands-on experience with EVM assembly language, crucial for advanced blockchain development.
+3. **Mastery of DeFi Concepts:** Explore and master the concepts and applications of decentralized finance, an emerging and significant sector in the blockchain world.
+
+### Expectations
+
+- **Commitment and Readiness:** The course demands a high level of commitment and is intended for individuals who are ready to dive deep into the complex world of blockchain technology.
+- **Advanced Level:** This is not an introductory course. It is expected that participants already have a foundational understanding of blockchain and programming concepts.
+
+---
+
+**Are you ready to embark on this journey and expand your knowledge in smart contract security, EVM assembly, and DeFi?** Let's get started! 🚀
+
+---
+---
+title: Pre-requisites
+---
+
+_Follow along with this video_
+
+
+
+---
+
+## Pre-requisites for the Smart Contract Security Course
+
+### Introduction
+
+This course is **not** for beginners. We'll be covering advanced security and DeFi topics in this course and in order to get the most out of it you will _need_ to have a foundation to build upon.
+
+### Necessary Background Knowledge
+
+1. **Blockchain Basics:** A fundamental understanding of blockchain technology is essential.
+2. **Solidity Fundamentals:** Proficiency in Solidity, the primary programming language for writing smart contracts.
+3. **Smart Contract Framework Experience:** Familiarity with a smart contract framework like Hardhat or Foundry is crucial, with a preference for Foundry, as it is the main tool used in this course.
+4. **Key Terms and Concepts:** Terms like storage, self-destruct, fallback functions, and ERC20s should be familiar.
+
+### Course Expectations
+
+- **Level of Skill:** The course assumes a certain level of skill and will only provide a brief refresher at the beginning.
+- **For Auditors and Researchers:** If you have experience in security or auditing, this course will enhance your skills, focusing on not just auditing but also security research and building those skills and habits to make you successful in the space.
+
+### Additional Resources
+
+- **Foundry Full Course:** Our Foundry Full Course will prepare you with all the skills you need to be successful here.
+  - [Foundry Fundamentals](https://updraft.cyfrin.io/courses/foundry)
+  - [Advanced Foundry](https://updraft.cyfrin.io/courses/advanced-foundry)
+- **GitHub Repository:** Additional resources to help get up to speed are available in the course's [GitHub repository](https://github.com/Cyfrin/security-and-auditing-full-course-s23).
+
+### Course Philosophy and Goal
+
+- **Building a Strong Foundation:** The course aims to provide a solid base in smart contract security.
+- **Empowerment:** It focuses on empowering developers and researchers to contribute significantly to the Web3 space.
+- **Importance of Security:** Emphasizes the crucial role of security in the future of Web3.
+
+---
+
+**Are you ready to build a strong foundation in smart contract security and contribute to the future of Web3?** Let's embark on this journey together!
+
+---
+---
+title: Best Practices
+---
+
+_Follow along with this video_
+
+
+
+---
+
+## Best Practices
+
+Welcome to our Smart Contract Security course! I'm super excited to guide you through this journey. Let’s make sure you get the absolute best out of it.
+
+Essential Resources:
+
+- Cyfrin Updraft - If you're reading this, you're already here. All the most up to date corrections, content and updates will be available here, as accessible as ever and as part of a community eager to help.
+- GitHub Repo - The [Security and Auditing Full Course](https://github.com/Cyfrin/security-and-auditing-full-course-s23) repo is going to be your bible throughout this course. It is packed with all the code and references you need to succeed.
+
+Now, let's talk about how you can really get into the groove of things:
+
+- **Code Along**: Trust me, coding along with me during the lessons will make things stick way better. Have the video up along with your IDE of choice and follow along. Actually going through these motions are what will commit them to memory.
+- **Join the Chat on GitHub**: Got questions? Want to chat with others? Head over to our [GitHub Discussions](https://github.com/Cyfrin/security-and-auditing-full-course-s23/discussions) tab. It's a great spot to talk things out.
+- **Stay Up-to-Date**: Remember, the world of coding changes fast. Keep an eye on Cyfrin Updraft for the latest and greatest in course content.
+- **Dive into the Community** - We have a [Discord](https://discord.gg/cyfrin) server that is great for networking with fellow students and being involved in the community. Join us and share your successes and help others! To go far, we go together!
+
+About your learning pace – everyone's different, right? So:
+
+- **Take Breaks**: They’re not just okay, they’re necessary! Your brain will thank you.
+- **Control the Tempo**: Feel free to speed up or slow down the videos. Video playback settings are available to control the pace.
+- **Keep Track of Your Journey**: Use those timestamps in our [GitHub repo](https://github.com/Cyfrin/security-and-auditing-full-course-s23) to bookmark your progress.
+- **Jump Around**: The course is set up so you can hop between sections as you like. Reflect on each lesson to really make it stick.
+
+And don’t forget, you’re not alone in this:
+
+- **Connect with the Community**: There are awesome places like [Ethereum Stack Exchange](https://ethereum.stackexchange.com/) and various decentralized Q&A forums, not to mention GitHub, for some solid discussion and collaboration.
+- **Learn Together**: The blockchain and smart contract space is all about teamwork and sharing knowledge. So, getting involved with others will only boost your learning.
+
+Alright, ready to jump in? Just follow these tips, and you'll be navigating through the Smart Contract Security course like a pro. Let’s get started! 🚀👩‍💻👨‍💻
