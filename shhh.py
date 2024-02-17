@@ -2,13 +2,15 @@ import re
 
 message_chunks = []
 
+
 def chunk_message(message, length=1500):
     """Splits the message into chunks of a specified length."""
-    return [message[i:i+length] for i in range(0, len(message), length)]
+    return [message[i : i + length] for i in range(0, len(message), length)]
+
 
 def stop_being_dolphin(message):
     """Replaces all case-insensitive occurrences of 'dolphin' with 'LUNA'."""
-    return re.sub(r'\bdolphin\b', 'LUNA', message, flags=re.IGNORECASE)
+    return re.sub(r"\bdolphin\b", "LUNA", message, flags=re.IGNORECASE)
 
 
 def set_message(message):
@@ -24,6 +26,7 @@ def set_message(message):
     else:
         # If the message is short enough, keep it as a single chunk
         message_chunks = [message]
+
 
 def get_next_chunk():
     """Returns the next chunk of the message."""

@@ -2,3 +2,6 @@
 updraft-context-db/
 codehawks-docs-db/
 *.json
+venv/
+.venv/
+__pycache__/

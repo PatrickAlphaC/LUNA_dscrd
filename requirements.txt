@@ -4,3 +4,5 @@ datasets
 langchain-community
 requests
 python-dotenv
+langchain
+openai

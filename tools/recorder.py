@@ -1,6 +1,7 @@
 import speech_recognition as sr
 import os
 
+
 def record_audio():
     r = sr.Recognizer()
     source = sr.Microphone()
@@ -17,5 +18,6 @@ def record_audio():
 
     print("Saved recorded audio to {}".format(filename))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     record_audio()
